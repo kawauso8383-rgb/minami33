@@ -210,7 +210,7 @@
   </div>
 
   <script>
-    // ★★★【ここに京都南SS用のGAS WebアプリURLを貼り付けてください】★★★
+    // ★京都南SS用 GASデプロイURL
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzRfriytNrVhU7n5e3p87tfZTF_13DEnC5_z9JOF-rytUz8ij7vlpe0xJVnPv6x_nQ/exec";
 
     let currentTab = '8h';
@@ -350,15 +350,19 @@
 
     document.getElementById("reportForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      if (GAS_URL.includes("YOUR_GAS_SCRIPT_ID")) {
-        alert("エラー: GASのURLが設定されていません。");
-        return;
-      }
 
       const overlay = document.getElementById("loadingOverlay");
       const submitBtn = document.getElementById("submitBtn");
 
-      const reportTypeName = currentTab === '8h' ? "8時報告" : (currentTab === 'month' ? "15時月末報告" : "15時報告");
+      let reportTypeName = "15時報告";
+      if (currentTab === '8h') {
+        reportTypeName = "8時報告";
+      } else if (currentTab === 'month') {
+        reportTypeName = "15時月末報告";
+      }
+
+      // ★店舗名ヘッダーの取得
+      const storeName = document.getElementById("store-label").textContent;
 
       const fmt = (id) => {
         const val = parseFloat(v(id));
@@ -430,7 +434,6 @@
 
       const memoPart = (rawMemo !== "" && rawMemo !== "0") ? `\n\nメモ：\n${rawMemo}` : "";
 
-      // ★1. 販売累計＋手打ちのブロックを作成
       let salesText = `ハイオク・・・：${fmt('cum_hiok')}
 レギュラー・・：${fmt('cum_reg')}
 軽油・・・・・：${fmt('cum_keiyu')}
@@ -442,7 +445,6 @@
         salesText += `\n${rawOther}`;
       }
 
-      // ★2. 在庫のブロックを作成
       const stockText = `在庫ハイオク・：${fmt('stock15_hiok')}
 在庫レギュラー：${totalReg15}
 在庫軽油・・・：${fmt('stock15_keiyu')}
@@ -451,7 +453,9 @@
       let lineText = "";
       if (currentTab === '8h') {
         lineText = 
-`在庫ハイオク・：${fmt('stock_hiok')}
+`${storeName}
+
+在庫ハイオク・：${fmt('stock_hiok')}
 在庫レギュラー：${totalReg8}
 在庫軽油・・・：${fmt('stock_keiyu')}
 在庫灯油・・・：${fmt('stock_toyu')}
@@ -469,8 +473,7 @@
 ${todayLorryVal}`;
 
       } else if (currentTab === '15h') {
-        // ★ \n\n で確実に空行を1行作成
-        lineText = `${salesText}\n\n${stockText}\n\n明日のローリー\n${lorryText}\n\n${tomLorryVal}${memoPart}`;
+        lineText = `${storeName}\n\n${salesText}\n\n${stockText}\n\n明日のローリー\n${lorryText}\n\n${tomLorryVal}${memoPart}`;
 
       } else {
         const tyGas = (parseFloat(document.getElementById("ty_gas").value) || 0).toFixed(1);
@@ -488,7 +491,7 @@ ${todayLorryVal}`;
         const tyText = `今年の累計\nガソリン・・：${tyGas}\n軽油・・・・：${tyKeiyu}\n灯油・・・・：${tyToyu}\nオイル・・・：${tyOil} 台\n洗車・・・・：${tyWash} 台`;
         const lyText = `去年の累計\nガソリン・・：${lyGas}\n軽油・・・・：${lyKeiyu}\n灯油・・・・：${lyToyu}\nオイル・・・：${lyOil} 台\n洗車・・・・：${lyWash} 台`;
 
-        lineText = `${salesText}\n\n${stockText}\n\n${tyText}\n\n${lyText}\n\n明日のローリー\n${lorryText}\n\n${tomLorryVal}${memoPart}`;
+        lineText = `${storeName}\n\n${salesText}\n\n${stockText}\n\n${tyText}\n\n${lyText}\n\n明日のローリー\n${lorryText}\n\n${tomLorryVal}${memoPart}`;
       }
 
       overlay.style.display = "flex";
