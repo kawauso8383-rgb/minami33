@@ -211,7 +211,7 @@
 
   <script>
     // ★★★【ここに京都南SS用のGAS WebアプリURLを貼り付けてください】★★★
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzRfriytNrVhU7n5e3p87tfZTF_13DEnC5_z9JOF-rytUz8ij7vlpe0xJVnPv6x_nQ/exec;
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzRfriytNrVhU7n5e3p87tfZTF_13DEnC5_z9JOF-rytUz8ij7vlpe0xJVnPv6x_nQ/exec";
 
     let currentTab = '8h';
     let baseThisYear = { gas: 0, keiyu: 0, toyu: 0, oil: 0, wash: 0 };
@@ -430,16 +430,19 @@
 
       const memoPart = (rawMemo !== "" && rawMemo !== "0") ? `\n\nメモ：\n${rawMemo}` : "";
 
-      // ★販売累計＋手打ちブロック（独立作成）
-      const otherPart = (rawOther !== "" && rawOther !== "0") ? `\n${rawOther}` : "";
-      const salesText = `ハイオク・・・：${fmt('cum_hiok')}
+      // ★1. 販売累計＋手打ちのブロックを作成
+      let salesText = `ハイオク・・・：${fmt('cum_hiok')}
 レギュラー・・：${fmt('cum_reg')}
 軽油・・・・・：${fmt('cum_keiyu')}
 灯油・・・・・：${fmt('cum_toyu')}
 オイル・・・・：${v('cum_oil')} 台
-洗車・・・・・：${v('cum_wash')} 台${otherPart}`;
+洗車・・・・・：${v('cum_wash')} 台`;
 
-      // ★在庫ブロック（独立作成）
+      if (rawOther !== "" && rawOther !== "0") {
+        salesText += `\n${rawOther}`;
+      }
+
+      // ★2. 在庫のブロックを作成
       const stockText = `在庫ハイオク・：${fmt('stock15_hiok')}
 在庫レギュラー：${totalReg15}
 在庫軽油・・・：${fmt('stock15_keiyu')}
@@ -466,7 +469,7 @@
 ${todayLorryVal}`;
 
       } else if (currentTab === '15h') {
-        // ★ \n\n で手打ち入力があってもなくても確実に空行を作ります
+        // ★ \n\n で確実に空行を1行作成
         lineText = `${salesText}\n\n${stockText}\n\n明日のローリー\n${lorryText}\n\n${tomLorryVal}${memoPart}`;
 
       } else {
