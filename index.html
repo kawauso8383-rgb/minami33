@@ -430,22 +430,11 @@
 
       const memoPart = (rawMemo !== "" && rawMemo !== "0") ? `\n\nメモ：\n${rawMemo}` : "";
 
-      // ★販売累計ブロックの作成（手打ちの有無を判定）
-      let salesBlock = `ハイオク・・・：${fmt('cum_hiok')}
-レギュラー・・：${fmt('cum_reg')}
-軽油・・・・・：${fmt('cum_keiyu')}
-灯油・・・・・：${fmt('cum_toyu')}
-オイル・・・・：${v('cum_oil')} 台
-洗車・・・・・：${v('cum_wash')} 台`;
-
-     if (rawOther !== "" && rawOther !== "0") {
-        salesBlock += `\n${rawOther}\n`; // ★末尾に改行を追加して強制的に空行を作ります
+      // ★手打ち欄の直後に改行を加えて、確実に1行の空行を作る修正
+      let otherPart = "";
+      if (rawOther !== "" && rawOther !== "0") {
+        otherPart = `${rawOther}\n`;
       }
-      // ★在庫ブロックの作成
-      let stockBlock = `在庫ハイオク・：${fmt('stock15_hiok')}
-在庫レギュラー：${totalReg15}
-在庫軽油・・・：${fmt('stock15_keiyu')}
-在庫灯油・・・：${fmt('stock15_toyu')}`;
 
       let lineText = "";
       if (currentTab === '8h') {
@@ -469,9 +458,17 @@ ${todayLorryVal}`;
 
       } else if (currentTab === '15h') {
         lineText = 
-`${salesBlock}
-
-${stockBlock}
+`ハイオク・・・：${fmt('cum_hiok')}
+レギュラー・・：${fmt('cum_reg')}
+軽油・・・・・：${fmt('cum_keiyu')}
+灯油・・・・・：${fmt('cum_toyu')}
+オイル・・・・：${v('cum_oil')} 台
+洗車・・・・・：${v('cum_wash')} 台
+${otherPart}
+在庫ハイオク・：${fmt('stock15_hiok')}
+在庫レギュラー：${totalReg15}
+在庫軽油・・・：${fmt('stock15_keiyu')}
+在庫灯油・・・：${fmt('stock15_toyu')}
 
 明日のローリー
 ${lorryText}
@@ -492,9 +489,17 @@ ${tomLorryVal}${memoPart}`;
         const lyWash = document.getElementById("ly_wash").value || '0';
 
         lineText = 
-`${salesBlock}
-
-${stockBlock}
+`ハイオク・・・：${fmt('cum_hiok')}
+レギュラー・・：${fmt('cum_reg')}
+軽油・・・・・：${fmt('cum_keiyu')}
+灯油・・・・・：${fmt('cum_toyu')}
+オイル・・・・：${v('cum_oil')} 台
+洗車・・・・・：${v('cum_wash')} 台
+${otherPart}
+在庫ハイオク・：${fmt('stock15_hiok')}
+在庫レギュラー：${totalReg15}
+在庫軽油・・・：${fmt('stock15_keiyu')}
+在庫灯油・・・：${fmt('stock15_toyu')}
 
 今年の累計
 ガソリン・・：${tyGas}
@@ -507,8 +512,8 @@ ${stockBlock}
 ガソリン・・：${lyGas}
 軽油・・・・：${lyKeiyu}
 灯油・・・・：${tyToyu}
-オイル・・・：${tyOil} 台
-洗車・・・・：${tyWash} 台
+オイル・・・：${lyOil} 台
+洗車・・・・：${lyWash} 台
 
 明日のローリー
 ${lorryText}
