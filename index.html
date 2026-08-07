@@ -438,10 +438,9 @@
 オイル・・・・：${v('cum_oil')} 台
 洗車・・・・・：${v('cum_wash')} 台`;
 
-      if (rawOther !== "" && rawOther !== "0") {
-        salesBlock += `\n${rawOther}`;
+     if (rawOther !== "" && rawOther !== "0") {
+        salesBlock += `\n${rawOther}\n`; // ★末尾に改行を追加して強制的に空行を作ります
       }
-
       // ★在庫ブロックの作成
       let stockBlock = `在庫ハイオク・：${fmt('stock15_hiok')}
 在庫レギュラー：${totalReg15}
