@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>⛽️京都南SS</title>
-  <link rel="apple-touch-icon" href="https://kawauso8383-rgb.github.io/icon/icon.png.jpg?v=5">">
+  <link rel="apple-touch-icon" href="https://kawauso8383-rgb.github.io/icon/icon.png.jpg?v=5">
   <style>
     :root {
       --primary-color: #10b981;
@@ -130,7 +130,7 @@
         <div class="form-group"><label>洗車 (台)</label><input type="number" id="cum_wash" class="nav-input cum-calc" enterkeyhint="next"></div>
         <div style="margin-top: 8px;">
           <label style="font-size: 0.85rem; font-weight: 600;">その他手打ち (コーティングなど)</label>
-          <input type="text" class="full-width-input nav-input" placeholder="例：コーティング：2台" id="other_manual" enterkeyhint="next">
+          <input type="text" class="full-width-input nav-input" placeholder="例：キーパー：1台" id="other_manual" enterkeyhint="next">
         </div>
       </div>
 
@@ -211,7 +211,7 @@
 
   <script>
     // ★★★【ここに京都南SS用のGAS WebアプリURLを貼り付けてください】★★★
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzRfriytNrVhU7n5e3p87tfZTF_13DEnC5_z9JOF-rytUz8ij7vlpe0xJVnPv6x_nQ/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzRfriytNrVhU7n5e3p87tfZTF_13DEnC5_z9JOF-rytUz8ij7vlpe0xJVnPv6x_nQ/exec;
 
     let currentTab = '8h';
     let baseThisYear = { gas: 0, keiyu: 0, toyu: 0, oil: 0, wash: 0 };
@@ -235,10 +235,10 @@
 
       if (!res) return;
       if (res.prev) {
-        document.getElementById("prev_hiok").value = res.prev.hiok || 0;
-        document.getElementById("prev_reg").value = res.prev.reg || 0;
-        document.getElementById("prev_keiyu").value = res.prev.keiyu || 0;
-        document.getElementById("prev_toyu").value = res.prev.toyu || 0;
+        document.getElementById("prev_hiok").value = (parseFloat(res.prev.hiok) || 0).toFixed(1);
+        document.getElementById("prev_reg").value = (parseFloat(res.prev.reg) || 0).toFixed(1);
+        document.getElementById("prev_keiyu").value = (parseFloat(res.prev.keiyu) || 0).toFixed(1);
+        document.getElementById("prev_toyu").value = (parseFloat(res.prev.toyu) || 0).toFixed(1);
       }
       if (res.thisYear) {
         baseThisYear = {
@@ -248,16 +248,16 @@
           oil: parseInt(res.thisYear.oil) || 0,
           wash: parseInt(res.thisYear.wash) || 0
         };
-        document.getElementById("ty_gas").value = res.thisYear.gas || 0;
-        document.getElementById("ty_keiyu").value = res.thisYear.keiyu || 0;
-        document.getElementById("ty_toyu").value = res.thisYear.toyu || 0;
-        document.getElementById("ty_oil").value = res.thisYear.oil || 0;
-        document.getElementById("ty_wash").value = res.thisYear.wash || 0;
+        document.getElementById("ty_gas").value = baseThisYear.gas.toFixed(1);
+        document.getElementById("ty_keiyu").value = baseThisYear.keiyu.toFixed(1);
+        document.getElementById("ty_toyu").value = baseThisYear.toyu.toFixed(1);
+        document.getElementById("ty_oil").value = baseThisYear.oil;
+        document.getElementById("ty_wash").value = baseThisYear.wash;
       }
       if (res.lastYear) {
-        document.getElementById("ly_gas").value = res.lastYear.gas || 0;
-        document.getElementById("ly_keiyu").value = res.lastYear.keiyu || 0;
-        document.getElementById("ly_toyu").value = res.lastYear.toyu || 0;
+        document.getElementById("ly_gas").value = (parseFloat(res.lastYear.gas) || 0).toFixed(1);
+        document.getElementById("ly_keiyu").value = (parseFloat(res.lastYear.keiyu) || 0).toFixed(1);
+        document.getElementById("ly_toyu").value = (parseFloat(res.lastYear.toyu) || 0).toFixed(1);
         document.getElementById("ly_oil").value = res.lastYear.oil || 0;
         document.getElementById("ly_wash").value = res.lastYear.wash || 0;
       }
@@ -298,11 +298,11 @@
       const todayOil = parseInt(v('cum_oil')) || 0;
       const todayWash = parseInt(v('cum_wash')) || 0;
 
-      document.getElementById("ty_gas").value = (Math.round((baseThisYear.gas + todayGas) * 10) / 10) || 0;
-      document.getElementById("ty_keiyu").value = (Math.round((baseThisYear.keiyu + todayKeiyu) * 10) / 10) || 0;
-      document.getElementById("ty_toyu").value = (Math.round((baseThisYear.toyu + todayToyu) * 10) / 10) || 0;
-      document.getElementById("ty_oil").value = (baseThisYear.oil + todayOil) || 0;
-      document.getElementById("ty_wash").value = (baseThisYear.wash + todayWash) || 0;
+      document.getElementById("ty_gas").value = (baseThisYear.gas + todayGas).toFixed(1);
+      document.getElementById("ty_keiyu").value = (baseThisYear.keiyu + todayKeiyu).toFixed(1);
+      document.getElementById("ty_toyu").value = (baseThisYear.toyu + todayToyu).toFixed(1);
+      document.getElementById("ty_oil").value = baseThisYear.oil + todayOil;
+      document.getElementById("ty_wash").value = baseThisYear.wash + todayWash;
     }
 
     document.querySelectorAll('.cum-calc').forEach(el => {
@@ -360,10 +360,16 @@
 
       const reportTypeName = currentTab === '8h' ? "8時報告" : (currentTab === 'month' ? "15時月末報告" : "15時報告");
 
-      const prevHiok = document.getElementById("prev_hiok").value === '...' ? '0' : document.getElementById("prev_hiok").value;
-      const prevReg = document.getElementById("prev_reg").value === '...' ? '0' : document.getElementById("prev_reg").value;
-      const prevKeiyu = document.getElementById("prev_keiyu").value === '...' ? '0' : document.getElementById("prev_keiyu").value;
-      const prevToyu = document.getElementById("prev_toyu").value === '...' ? '0' : document.getElementById("prev_toyu").value;
+      // 小数点第1位固定フォーマット用関数 (.toFixed(1))
+      const fmt = (id) => {
+        const val = parseFloat(v(id));
+        return isNaN(val) ? "0.0" : val.toFixed(1);
+      };
+
+      const prevHiok = document.getElementById("prev_hiok").value === '...' ? '0.0' : (parseFloat(document.getElementById("prev_hiok").value) || 0).toFixed(1);
+      const prevReg = document.getElementById("prev_reg").value === '...' ? '0.0' : (parseFloat(document.getElementById("prev_reg").value) || 0).toFixed(1);
+      const prevKeiyu = document.getElementById("prev_keiyu").value === '...' ? '0.0' : (parseFloat(document.getElementById("prev_keiyu").value) || 0).toFixed(1);
+      const prevToyu = document.getElementById("prev_toyu").value === '...' ? '0.0' : (parseFloat(document.getElementById("prev_toyu").value) || 0).toFixed(1);
 
       const rawOther = document.getElementById("other_manual").value.trim();
       const rawMemo = document.getElementById("memo").value.trim();
@@ -374,19 +380,20 @@
       const tomLorrySel = document.getElementById("tom_lorry_status").value;
       const tomLorryVal = tomLorrySel === 'manual' ? (document.getElementById("tom_lorry_manual").value.trim() || "明日のローリー入庫問題ありません。") : tomLorrySel;
 
-      const totalReg8 = Math.round((
+      // ★レギュラー①〜④の合計（LINE用: .toFixed(1)）
+      const totalReg8 = (
         (parseFloat(v('stock_reg1')) || 0) + 
         (parseFloat(v('stock_reg2')) || 0) + 
         (parseFloat(v('stock_reg3')) || 0) + 
         (parseFloat(v('stock_reg4')) || 0)
-      ) * 10) / 10;
+      ).toFixed(1);
 
-      const totalReg15 = Math.round((
+      const totalReg15 = (
         (parseFloat(v('stock15_reg1')) || 0) + 
         (parseFloat(v('stock15_reg2')) || 0) + 
         (parseFloat(v('stock15_reg3')) || 0) + 
         (parseFloat(v('stock15_reg4')) || 0)
-      ) * 10) / 10;
+      ).toFixed(1);
 
       const payload = {
         reportType: reportTypeName,
@@ -429,35 +436,36 @@
       let lineText = "";
       if (currentTab === '8h') {
         lineText = 
-`在庫ハイオク・：${v('stock_hiok')}
+`在庫ハイオク・：${fmt('stock_hiok')}
 在庫レギュラー：${totalReg8}
-在庫軽油・・・：${v('stock_keiyu')}
-在庫灯油・・・：${v('stock_toyu')}
+在庫軽油・・・：${fmt('stock_keiyu')}
+在庫灯油・・・：${fmt('stock_toyu')}
 
 昨日ハイオク・：${prevHiok}
 昨日レギュラー：${prevReg}
 昨日軽油・・・：${prevKeiyu}
 昨日灯油・・・：${prevToyu}
 
-朝のハイオク・：${v('m_sales_hiok')}
-朝のレギュラー：${v('m_sales_reg')}
-朝の軽油・・・：${v('m_sales_keiyu')}
-朝の灯油・・・：${v('m_sales_toyu')}
+朝のハイオク・：${fmt('m_sales_hiok')}
+朝のレギュラー：${fmt('m_sales_reg')}
+朝の軽油・・・：${fmt('m_sales_keiyu')}
+朝の灯油・・・：${fmt('m_sales_toyu')}
 
 ${todayLorryVal}`;
 
       } else if (currentTab === '15h') {
         lineText = 
-`ハイオク・・・：${v('cum_hiok')}
-レギュラー・・：${v('cum_reg')}
-軽油・・・・・：${v('cum_keiyu')}
-灯油・・・・・：${v('cum_toyu')}
+`ハイオク・・・：${fmt('cum_hiok')}
+レギュラー・・：${fmt('cum_reg')}
+軽油・・・・・：${fmt('cum_keiyu')}
+灯油・・・・・：${fmt('cum_toyu')}
 オイル・・・・：${v('cum_oil')} 台
 洗車・・・・・：${v('cum_wash')} 台
-${otherPart}在庫ハイオク・：${v('stock15_hiok')}
+${otherPart}
+在庫ハイオク・：${fmt('stock15_hiok')}
 在庫レギュラー：${totalReg15}
-在庫軽油・・・：${v('stock15_keiyu')}
-在庫灯油・・・：${v('stock15_toyu')}
+在庫軽油・・・：${fmt('stock15_keiyu')}
+在庫灯油・・・：${fmt('stock15_toyu')}
 
 明日のローリー
 ${lorryText}
@@ -465,29 +473,30 @@ ${lorryText}
 ${tomLorryVal}${memoPart}`;
 
       } else {
-        const tyGas = document.getElementById("ty_gas").value || '0';
-        const tyKeiyu = document.getElementById("ty_keiyu").value || '0';
-        const tyToyu = document.getElementById("ty_toyu").value || '0';
+        const tyGas = (parseFloat(document.getElementById("ty_gas").value) || 0).toFixed(1);
+        const tyKeiyu = (parseFloat(document.getElementById("ty_keiyu").value) || 0).toFixed(1);
+        const tyToyu = (parseFloat(document.getElementById("ty_toyu").value) || 0).toFixed(1);
         const tyOil = document.getElementById("ty_oil").value || '0';
         const tyWash = document.getElementById("ty_wash").value || '0';
 
-        const lyGas = document.getElementById("ly_gas").value || '0';
-        const lyKeiyu = document.getElementById("ly_keiyu").value || '0';
-        const lyToyu = document.getElementById("ly_toyu").value || '0';
+        const lyGas = (parseFloat(document.getElementById("ly_gas").value) || 0).toFixed(1);
+        const lyKeiyu = (parseFloat(document.getElementById("ly_keiyu").value) || 0).toFixed(1);
+        const lyToyu = (parseFloat(document.getElementById("ly_toyu").value) || 0).toFixed(1);
         const lyOil = document.getElementById("ly_oil").value || '0';
         const lyWash = document.getElementById("ly_wash").value || '0';
 
         lineText = 
-`ハイオク・・・：${v('cum_hiok')}
-レギュラー・・：${v('cum_reg')}
-軽油・・・・・：${v('cum_keiyu')}
-灯油・・・・・：${v('cum_toyu')}
+`ハイオク・・・：${fmt('cum_hiok')}
+レギュラー・・：${fmt('cum_reg')}
+軽油・・・・・：${fmt('cum_keiyu')}
+灯油・・・・・：${fmt('cum_toyu')}
 オイル・・・・：${v('cum_oil')} 台
 洗車・・・・・：${v('cum_wash')} 台
-${otherPart}在庫ハイオク・：${v('stock15_hiok')}
+${otherPart}
+在庫ハイオク・：${fmt('stock15_hiok')}
 在庫レギュラー：${totalReg15}
-在庫軽油・・・：${v('stock15_keiyu')}
-在庫灯油・・・：${v('stock15_toyu')}
+在庫軽油・・・：${fmt('stock15_keiyu')}
+在庫灯油・・・：${fmt('stock15_toyu')}
 
 今年の累計
 ガソリン・・：${tyGas}
@@ -499,7 +508,7 @@ ${otherPart}在庫ハイオク・：${v('stock15_hiok')}
 去年の累計
 ガソリン・・：${lyGas}
 軽油・・・・：${lyKeiyu}
-灯油・・・・：${tyToyu}
+灯油・・・・：${lyToyu}
 オイル・・・：${lyOil} 台
 洗車・・・・：${lyWash} 台
 
