@@ -430,11 +430,20 @@
 
       const memoPart = (rawMemo !== "" && rawMemo !== "0") ? `\n\nメモ：\n${rawMemo}` : "";
 
-      // ★手打ち欄の直後に改行を加えて、確実に1行の空行を作る修正
-      let otherPart = "";
-      if (rawOther !== "" && rawOther !== "0") {
-        otherPart = `${rawOther}\n`;
-      }
+      // ★販売累計＋手打ちブロック（独立作成）
+      const otherPart = (rawOther !== "" && rawOther !== "0") ? `\n${rawOther}` : "";
+      const salesText = `ハイオク・・・：${fmt('cum_hiok')}
+レギュラー・・：${fmt('cum_reg')}
+軽油・・・・・：${fmt('cum_keiyu')}
+灯油・・・・・：${fmt('cum_toyu')}
+オイル・・・・：${v('cum_oil')} 台
+洗車・・・・・：${v('cum_wash')} 台${otherPart}`;
+
+      // ★在庫ブロック（独立作成）
+      const stockText = `在庫ハイオク・：${fmt('stock15_hiok')}
+在庫レギュラー：${totalReg15}
+在庫軽油・・・：${fmt('stock15_keiyu')}
+在庫灯油・・・：${fmt('stock15_toyu')}`;
 
       let lineText = "";
       if (currentTab === '8h') {
@@ -457,23 +466,8 @@
 ${todayLorryVal}`;
 
       } else if (currentTab === '15h') {
-        lineText = 
-`ハイオク・・・：${fmt('cum_hiok')}
-レギュラー・・：${fmt('cum_reg')}
-軽油・・・・・：${fmt('cum_keiyu')}
-灯油・・・・・：${fmt('cum_toyu')}
-オイル・・・・：${v('cum_oil')} 台
-洗車・・・・・：${v('cum_wash')} 台
-${otherPart}
-在庫ハイオク・：${fmt('stock15_hiok')}
-在庫レギュラー：${totalReg15}
-在庫軽油・・・：${fmt('stock15_keiyu')}
-在庫灯油・・・：${fmt('stock15_toyu')}
-
-明日のローリー
-${lorryText}
-
-${tomLorryVal}${memoPart}`;
+        // ★ \n\n で手打ち入力があってもなくても確実に空行を作ります
+        lineText = `${salesText}\n\n${stockText}\n\n明日のローリー\n${lorryText}\n\n${tomLorryVal}${memoPart}`;
 
       } else {
         const tyGas = (parseFloat(document.getElementById("ty_gas").value) || 0).toFixed(1);
@@ -488,37 +482,10 @@ ${tomLorryVal}${memoPart}`;
         const lyOil = document.getElementById("ly_oil").value || '0';
         const lyWash = document.getElementById("ly_wash").value || '0';
 
-        lineText = 
-`ハイオク・・・：${fmt('cum_hiok')}
-レギュラー・・：${fmt('cum_reg')}
-軽油・・・・・：${fmt('cum_keiyu')}
-灯油・・・・・：${fmt('cum_toyu')}
-オイル・・・・：${v('cum_oil')} 台
-洗車・・・・・：${v('cum_wash')} 台
-${otherPart}
-在庫ハイオク・：${fmt('stock15_hiok')}
-在庫レギュラー：${totalReg15}
-在庫軽油・・・：${fmt('stock15_keiyu')}
-在庫灯油・・・：${fmt('stock15_toyu')}
+        const tyText = `今年の累計\nガソリン・・：${tyGas}\n軽油・・・・：${tyKeiyu}\n灯油・・・・：${tyToyu}\nオイル・・・：${tyOil} 台\n洗車・・・・：${tyWash} 台`;
+        const lyText = `去年の累計\nガソリン・・：${lyGas}\n軽油・・・・：${lyKeiyu}\n灯油・・・・：${lyToyu}\nオイル・・・：${lyOil} 台\n洗車・・・・：${lyWash} 台`;
 
-今年の累計
-ガソリン・・：${tyGas}
-軽油・・・・：${tyKeiyu}
-灯油・・・・：${tyToyu}
-オイル・・・：${tyOil} 台
-洗車・・・・：${tyWash} 台
-
-去年の累計
-ガソリン・・：${lyGas}
-軽油・・・・：${lyKeiyu}
-灯油・・・・：${tyToyu}
-オイル・・・：${lyOil} 台
-洗車・・・・：${lyWash} 台
-
-明日のローリー
-${lorryText}
-
-${tomLorryVal}${memoPart}`;
+        lineText = `${salesText}\n\n${stockText}\n\n${tyText}\n\n${lyText}\n\n明日のローリー\n${lorryText}\n\n${tomLorryVal}${memoPart}`;
       }
 
       overlay.style.display = "flex";
