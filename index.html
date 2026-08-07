@@ -130,7 +130,7 @@
         <div class="form-group"><label>洗車 (台)</label><input type="number" id="cum_wash" class="nav-input cum-calc" enterkeyhint="next"></div>
         <div style="margin-top: 8px;">
           <label style="font-size: 0.85rem; font-weight: 600;">その他手打ち (コーティングなど)</label>
-          <input type="text" class="full-width-input nav-input" placeholder="例：キーパー：1台" id="other_manual" enterkeyhint="next">
+          <input type="text" class="full-width-input nav-input" placeholder="例：キーパー    4台" id="other_manual" enterkeyhint="next">
         </div>
       </div>
 
@@ -360,7 +360,6 @@
 
       const reportTypeName = currentTab === '8h' ? "8時報告" : (currentTab === 'month' ? "15時月末報告" : "15時報告");
 
-      // 小数点第1位固定フォーマット用関数 (.toFixed(1))
       const fmt = (id) => {
         const val = parseFloat(v(id));
         return isNaN(val) ? "0.0" : val.toFixed(1);
@@ -380,7 +379,6 @@
       const tomLorrySel = document.getElementById("tom_lorry_status").value;
       const tomLorryVal = tomLorrySel === 'manual' ? (document.getElementById("tom_lorry_manual").value.trim() || "明日のローリー入庫問題ありません。") : tomLorrySel;
 
-      // ★レギュラー①〜④の合計（LINE用: .toFixed(1)）
       const totalReg8 = (
         (parseFloat(v('stock_reg1')) || 0) + 
         (parseFloat(v('stock_reg2')) || 0) + 
@@ -430,8 +428,25 @@
         lorryText = "なし";
       }
 
-      const otherPart = (rawOther !== "" && rawOther !== "0") ? `${rawOther}\n` : "";
       const memoPart = (rawMemo !== "" && rawMemo !== "0") ? `\n\nメモ：\n${rawMemo}` : "";
+
+      // ★販売累計ブロックの作成（手打ちの有無を判定）
+      let salesBlock = `ハイオク・・・：${fmt('cum_hiok')}
+レギュラー・・：${fmt('cum_reg')}
+軽油・・・・・：${fmt('cum_keiyu')}
+灯油・・・・・：${fmt('cum_toyu')}
+オイル・・・・：${v('cum_oil')} 台
+洗車・・・・・：${v('cum_wash')} 台`;
+
+      if (rawOther !== "" && rawOther !== "0") {
+        salesBlock += `\n${rawOther}`;
+      }
+
+      // ★在庫ブロックの作成
+      let stockBlock = `在庫ハイオク・：${fmt('stock15_hiok')}
+在庫レギュラー：${totalReg15}
+在庫軽油・・・：${fmt('stock15_keiyu')}
+在庫灯油・・・：${fmt('stock15_toyu')}`;
 
       let lineText = "";
       if (currentTab === '8h') {
@@ -455,17 +470,9 @@ ${todayLorryVal}`;
 
       } else if (currentTab === '15h') {
         lineText = 
-`ハイオク・・・：${fmt('cum_hiok')}
-レギュラー・・：${fmt('cum_reg')}
-軽油・・・・・：${fmt('cum_keiyu')}
-灯油・・・・・：${fmt('cum_toyu')}
-オイル・・・・：${v('cum_oil')} 台
-洗車・・・・・：${v('cum_wash')} 台
-${otherPart}
-在庫ハイオク・：${fmt('stock15_hiok')}
-在庫レギュラー：${totalReg15}
-在庫軽油・・・：${fmt('stock15_keiyu')}
-在庫灯油・・・：${fmt('stock15_toyu')}
+`${salesBlock}
+
+${stockBlock}
 
 明日のローリー
 ${lorryText}
@@ -486,17 +493,9 @@ ${tomLorryVal}${memoPart}`;
         const lyWash = document.getElementById("ly_wash").value || '0';
 
         lineText = 
-`ハイオク・・・：${fmt('cum_hiok')}
-レギュラー・・：${fmt('cum_reg')}
-軽油・・・・・：${fmt('cum_keiyu')}
-灯油・・・・・：${fmt('cum_toyu')}
-オイル・・・・：${v('cum_oil')} 台
-洗車・・・・・：${v('cum_wash')} 台
-${otherPart}
-在庫ハイオク・：${fmt('stock15_hiok')}
-在庫レギュラー：${totalReg15}
-在庫軽油・・・：${fmt('stock15_keiyu')}
-在庫灯油・・・：${fmt('stock15_toyu')}
+`${salesBlock}
+
+${stockBlock}
 
 今年の累計
 ガソリン・・：${tyGas}
@@ -508,9 +507,9 @@ ${otherPart}
 去年の累計
 ガソリン・・：${lyGas}
 軽油・・・・：${lyKeiyu}
-灯油・・・・：${lyToyu}
-オイル・・・：${lyOil} 台
-洗車・・・・：${lyWash} 台
+灯油・・・・：${tyToyu}
+オイル・・・：${tyOil} 台
+洗車・・・・：${tyWash} 台
 
 明日のローリー
 ${lorryText}
