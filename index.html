@@ -91,7 +91,7 @@
 
       <div class="card">
         <div class="card-title">前日販売数量 (自動読み込み)</div>
-        <div class="card-subtext">※前日15時報告シートから自動取得されています</div>
+        <div class="card-subtext">※最新データ集約シートから自動取得されています</div>
         <div class="form-group"><label>昨日ハイオク</label><input type="text" class="readonly" id="prev_hiok" readonly value="..."></div>
         <div class="form-group"><label>昨日レギュラー</label><input type="text" class="readonly" id="prev_reg" readonly value="..."></div>
         <div class="form-group"><label>昨日軽油</label><input type="text" class="readonly" id="prev_keiyu" readonly value="..."></div>
@@ -130,7 +130,7 @@
         <div class="form-group"><label>洗車 (台)</label><input type="number" id="cum_wash" class="nav-input cum-calc" enterkeyhint="next"></div>
         <div style="margin-top: 8px;">
           <label style="font-size: 0.85rem; font-weight: 600;">その他手打ち (コーティングなど)</label>
-          <input type="text" class="full-width-input nav-input" placeholder="例：キーパー    4台" id="other_manual" enterkeyhint="next">
+          <input type="text" class="full-width-input nav-input" placeholder="例：キーパー" id="other_manual" enterkeyhint="next">
         </div>
       </div>
 
@@ -210,7 +210,6 @@
   </div>
 
   <script>
-    // ★京都南SS用 GASデプロイURL
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzRfriytNrVhU7n5e3p87tfZTF_13DEnC5_z9JOF-rytUz8ij7vlpe0xJVnPv6x_nQ/exec";
 
     let currentTab = '8h';
@@ -361,7 +360,6 @@
         reportTypeName = "15時月末報告";
       }
 
-      // ★店舗名ヘッダーの取得
       const storeName = document.getElementById("store-label").textContent;
 
       const fmt = (id) => {
@@ -397,7 +395,14 @@
         (parseFloat(v('stock15_reg4')) || 0)
       ).toFixed(1);
 
+      // ★ハイオク＋レギュラーの合計（ガソリン）を計算
+      const totalGasoline = (
+        (parseFloat(v('cum_hiok')) || 0) + 
+        (parseFloat(v('cum_reg')) || 0)
+      ).toFixed(1);
+
       const payload = {
+        storeName: storeName,
         reportType: reportTypeName,
         stock_hiok: v('stock_hiok'), 
         stock_reg1: v('stock_reg1'), stock_reg2: v('stock_reg2'), stock_reg3: v('stock_reg3'), stock_reg4: v('stock_reg4'),
@@ -434,8 +439,8 @@
 
       const memoPart = (rawMemo !== "" && rawMemo !== "0") ? `\n\nメモ：\n${rawMemo}` : "";
 
-      let salesText = `ハイオク・・・：${fmt('cum_hiok')}
-レギュラー・・：${fmt('cum_reg')}
+      // ★ガソリン（ハイオク＋レギュラー合計）で表示
+      let salesText = `ガソリン・・・：${totalGasoline}
 軽油・・・・・：${fmt('cum_keiyu')}
 灯油・・・・・：${fmt('cum_toyu')}
 オイル・・・・：${v('cum_oil')} 台
