@@ -395,7 +395,6 @@
         (parseFloat(v('stock15_reg4')) || 0)
       ).toFixed(1);
 
-      // ★ハイオク＋レギュラーの合計（ガソリン）を計算
       const totalGasoline = (
         (parseFloat(v('cum_hiok')) || 0) + 
         (parseFloat(v('cum_reg')) || 0)
@@ -420,26 +419,32 @@
         tom_lorry_status: tomLorryVal, memo: rawMemo
       };
 
+      // ★明日のローリーテキストを AM / PM に分けて綺麗に生成
+      let amParts = [];
+      if (v('lorry_am_h') !== '0') amParts.push(`H ${v('lorry_am_h')}k`);
+      if (v('lorry_am_r') !== '0') amParts.push(`R ${v('lorry_am_r')}k`);
+      if (v('lorry_am_d') !== '0') amParts.push(`D ${v('lorry_am_d')}k`);
+      if (v('lorry_am_k') !== '0') amParts.push(`K ${v('lorry_am_k')}k`);
+
+      let pmParts = [];
+      if (v('lorry_pm_h') !== '0') pmParts.push(`H ${v('lorry_pm_h')}k`);
+      if (v('lorry_pm_r') !== '0') pmParts.push(`R ${v('lorry_pm_r')}k`);
+      if (v('lorry_pm_d') !== '0') pmParts.push(`D ${v('lorry_pm_d')}k`);
+      if (v('lorry_pm_k') !== '0') pmParts.push(`K ${v('lorry_pm_k')}k`);
+
       let lorryText = "";
-      if (v('lorry_am_h') !== '0' || v('lorry_am_r') !== '0' || v('lorry_am_d') !== '0' || v('lorry_am_k') !== '0' ||
-          v('lorry_pm_h') !== '0' || v('lorry_pm_r') !== '0' || v('lorry_pm_d') !== '0' || v('lorry_pm_k') !== '0') {
-        let parts = [];
-        if (v('lorry_am_h') !== '0') parts.push(`H ${v('lorry_am_h')}k`);
-        if (v('lorry_am_r') !== '0') parts.push(`R ${v('lorry_am_r')}k`);
-        if (v('lorry_am_d') !== '0') parts.push(`D ${v('lorry_am_d')}k`);
-        if (v('lorry_am_k') !== '0') parts.push(`K ${v('lorry_am_k')}k`);
-        if (v('lorry_pm_h') !== '0') parts.push(`(PM)H ${v('lorry_pm_h')}k`);
-        if (v('lorry_pm_r') !== '0') parts.push(`(PM)R ${v('lorry_pm_r')}k`);
-        if (v('lorry_pm_d') !== '0') parts.push(`(PM)D ${v('lorry_pm_d')}k`);
-        if (v('lorry_pm_k') !== '0') parts.push(`(PM)K ${v('lorry_pm_k')}k`);
-        lorryText = parts.join(" / ");
+      if (amParts.length > 0 && pmParts.length > 0) {
+        lorryText = `AM ${amParts.join(" / ")}\nPM ${pmParts.join(" / ")}`;
+      } else if (amParts.length > 0) {
+        lorryText = `AM ${amParts.join(" / ")}`;
+      } else if (pmParts.length > 0) {
+        lorryText = `PM ${pmParts.join(" / ")}`;
       } else {
         lorryText = "なし";
       }
 
       const memoPart = (rawMemo !== "" && rawMemo !== "0") ? `\n\nメモ：\n${rawMemo}` : "";
 
-      // ★ガソリン（ハイオク＋レギュラー合計）で表示
       let salesText = `ガソリン・・・：${totalGasoline}
 軽油・・・・・：${fmt('cum_keiyu')}
 灯油・・・・・：${fmt('cum_toyu')}
